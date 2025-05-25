@@ -29,7 +29,13 @@ class Evaluator:
                     if not assignment_strip: continue
 
                     if '=' not in assignment_strip:
-                        if len(problem.variables) == 1 and not problem.expected_solution_expr.free_symbols:
+                        # Ensure expected_solution_expr is treated as a list for consistent free_symbols check
+                        expected_sols_for_check = problem.expected_solution_expr
+                        if not isinstance(expected_sols_for_check, list):
+                            expected_sols_for_check = [expected_sols_for_check]
+
+                        # Check if there's only one problem variable and all expected solutions are constants
+                        if len(problem.variables) == 1 and all(not expr.free_symbols for expr in expected_sols_for_check):
                             parsed_solver_solutions.append(parse_expr(assignment_strip))
                         else:
                             detail_message = f"Invalid format for assignment '{assignment_strip}', expected 'var = value'."

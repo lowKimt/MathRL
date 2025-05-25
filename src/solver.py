@@ -115,6 +115,17 @@ class SolverAI:
             ys = torch.cat([ys, torch.ones(1, 1).type_as(src_tensor.data).fill_(next_word_idx_item).to(self.device)], dim=0)
 
         solution_str = self.tokenizer.detokenize(generated_tokens)
+        
+        # Post-processing to fix malformed SymPy Eq expressions
+        if solution_str.startswith("Eq(x, ") and not solution_str.endswith(")"):
+            # Attempt to close incomplete Eq expressions
+            if "Eq(x, Eq(x, " in solution_str:
+                # Handle nested incomplete Eq
+                solution_str += "))" # Add two closing parentheses
+            else:
+                solution_str += ")" # Add one closing parenthesis
+            print(f"Solver (PyTorch): Corrected malformed solution for Problem ID {problem.id}: '{solution_str}'")
+
         print(f"Solver (PyTorch): Proposed solution for Problem ID {problem.id}: '{solution_str}'")
         return solution_str
 

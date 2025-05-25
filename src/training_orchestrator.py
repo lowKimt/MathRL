@@ -55,7 +55,7 @@ class TrainingOrchestrator:
 
         evaluation_results = self.evaluator.evaluate(problem, solution_str)
         print(f"Evaluator: Assessment for Problem ID {problem.id} - Correct: {evaluation_results['is_correct']}. Detail: {evaluation_results['detail']}")
-        if not evaluation_results['is_correct'] and problem.expected_solution_expr:
+        if not evaluation_results['is_correct'] and problem.expected_solution_expr is not None:
              expected_sol_str = "N/A"
              if isinstance(problem.expected_solution_expr, list):
                 expected_sol_str = ", ".join([sympy.printing.sstr(eq) for eq in problem.expected_solution_expr])
